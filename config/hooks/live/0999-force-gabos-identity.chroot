@@ -1,0 +1,10 @@
+#!/bin/sh
+# Forza l'identità GAB OS
+mkdir -p /etc/skel/.config/
+
+# Tema Scuro e Cursore
+echo "[Appearance]\nColorScheme=BreezeDark" > /etc/skel/.config/kdeglobals
+echo "[Mouse]\nTheme=breeze_cursors" > /etc/skel/.config/kcminputrc
+
+# Nome del sistema
+echo "GAB-OS-Galactic" > /etc/hostname
