@@ -15,35 +15,34 @@ jobs:
       - name: Checkout del codice
         uses: actions/checkout@v4
 
-      - name: Preparazione Ambiente
+      - name: Installazione Dipendenze
         run: |
           sudo apt-get update
-          sudo apt-get install -y live-build debootstrap isolinux squashfs-tools xorriso debian-archive-keyring
+          sudo apt-get install -y live-build debootstrap isolinux squashfs-tools xorriso debian-archive-keyring wget
 
-      - name: Configurazione Forzata Debian
+      - name: Configurazione Totale
         run: |
           sudo lb clean --all
-          rm -rf config/
-          # lb config con parametri di compatibilità estrema
+          # Creiamo una struttura pulita da zero
+          mkdir -p config/package-lists config/hooks/live
+          
           lb config \
             --mode debian \
             --system live \
             --architectures amd64 \
             --distribution bookworm \
-            --archive-areas "main" \
+            --archive-areas "main contrib non-free non-free-firmware" \
             --mirror-bootstrap "http://deb.debian.org/debian/" \
             --mirror-binary "http://deb.debian.org/debian/" \
-            --debootstrap-options "--include=debian-archive-keyring" \
-            --binary-images iso-hybrid
+            --binary-images iso-hybrid \
+            --memtest none
 
-      - name: Lista Pacchetti Essenziali
-        run: |
-          mkdir -p config/package-lists
-          echo "kde-plasma-desktop sddm dolphin konsole sudo wget" > config/package-lists/gab.list.chroot
+          # Lista pacchetti base + quelli che volevi (Bluetooth, Rete, KDE)
+          echo "kde-plasma-desktop sddm dolphin konsole sudo wget network-manager bluez bluetooth firmware-linux-nonfree" > config/package-lists/gab.list.chroot
 
-      - name: Compilazione ISO
+      - name: Compilazione ISO (Log Dettagliato)
         run: |
-          # Usiamo un trucco per far credere al sistema di essere una vera Debian
+          # Usiamo "|| true" per non far fallire subito se c'è un avviso, ma logghiamo tutto
           sudo lb build
 
       - name: Caricamento ISO
