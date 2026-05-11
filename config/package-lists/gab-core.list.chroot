@@ -1,32 +1,23 @@
-# --- AMBIENTE DESKTOP KDE ---
 kde-standard
-sddm               # Schermata di login moderna
-plasma-nm          # Gestione Wi-Fi per KDE
-plasma-pa          # Gestione Audio per KDE
-packagekit-qt5     # Integrazione pacchetti per KDE
-
-# --- BROWSER (GOOGLE CHROME) ---
-# Nota: Chrome non è nei repository Debian standard, 
-# installeremo le dipendenze e useremo un hook per scaricarlo.
+sddm
+plasma-nm
+plasma-pa
+dolphin
+konsole
+kate
+ark
+gwenview
+spectacle
+sudo
+firmware-linux
+firmware-linux-nonfree
+firmware-realtek
+firmware-iwlwifi
+gparted
 wget
 ca-certificates
 gnupg
 libu2f-udev
 libvulkan1
-
-# --- APP FONDAMENTALI KDE ---
-dolphin            # Gestore file (il migliore su Linux)
-konsole            # Terminale KDE
-kate               # Editor di testo avanzato
-ark                # Gestione archivi
-gwenview           # Visualizzatore immagini
-spectacle          # Per fare screenshot galattici
-
-# --- SISTEMA ---
-sudo
-firmware-linux
-firmware-linux-nonfree
-gparted
-# Componenti per la Dock stile macOS
-plasma-widgets-addons
-latte-dock
+mesa-vulkan-drivers
+vulkan-tools
