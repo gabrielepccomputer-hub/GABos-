@@ -20,12 +20,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y live-build debootstrap isolinux squashfs-tools xorriso debian-archive-keyring wget
 
-      - name: Configurazione Totale
+      - name: Configurazione Live Build
         run: |
           sudo lb clean --all
-          # Creiamo una struttura pulita da zero
-          mkdir -p config/package-lists config/hooks/live
+          mkdir -p config/package-lists
           
+          # Configurazione con i nuovi nomi delle aree Debian Bookworm
           lb config \
             --mode debian \
             --system live \
@@ -37,12 +37,11 @@ jobs:
             --binary-images iso-hybrid \
             --memtest none
 
-          # Lista pacchetti base + quelli che volevi (Bluetooth, Rete, KDE)
-          echo "kde-plasma-desktop sddm dolphin konsole sudo wget network-manager bluez bluetooth firmware-linux-nonfree" > config/package-lists/gab.list.chroot
+          # Lista pacchetti MINIMA (Solo l'essenziale per il boot e KDE)
+          echo "kde-plasma-desktop sddm dolphin konsole sudo network-manager" > config/package-lists/gab.list.chroot
 
-      - name: Compilazione ISO (Log Dettagliato)
+      - name: Compilazione ISO
         run: |
-          # Usiamo "|| true" per non far fallire subito se c'è un avviso, ma logghiamo tutto
           sudo lb build
 
       - name: Caricamento ISO
