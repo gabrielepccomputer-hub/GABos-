@@ -1,0 +1,9 @@
+[EdgeBarrier]
+EdgeBarrier=false
+
+[Compositing]
+Backend=OpenGL
+Enabled=true
+GLCore=true
+GLPreferBufferSwap=a
+WindowsBlockCompositing=false

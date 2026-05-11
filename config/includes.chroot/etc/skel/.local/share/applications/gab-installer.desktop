@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=GAB Installer
+Exec=gab-install %f
+Type=Application
+MimeType=application/vnd.debian.binary-package;application/x-executable;
+NoDisplay=true

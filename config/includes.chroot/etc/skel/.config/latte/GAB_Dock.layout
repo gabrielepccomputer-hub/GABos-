@@ -1,0 +1,13 @@
+[Layout]
+Name=GAB_Dock
+Version=2
+
+[Containments][1]
+formfactor=2
+location=4
+alignment=0
+visibility=0
+edgeMargin=0
+thick=48
+backgroundTransparency=0.2
+customColor=139,92,246

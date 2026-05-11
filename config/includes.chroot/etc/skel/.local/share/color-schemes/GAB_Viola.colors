@@ -1,0 +1,15 @@
+[General]
+Name=GAB_Viola
+ColorSlider=189,147,249
+
+[Colors:Window]
+BackgroundNormal=30,30,46
+ForegroundNormal=255,255,255
+
+[Colors:Button]
+BackgroundNormal=45,45,70
+ForegroundNormal=189,147,249
+
+[Colors:Selection]
+BackgroundNormal=139,92,246
+ForegroundNormal=255,255,255
