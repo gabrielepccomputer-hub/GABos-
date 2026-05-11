@@ -15,20 +15,25 @@ jobs:
       - name: Installazione strumenti Live Build
         run: |
           sudo apt-get update
-          sudo apt-get install -y live-build debootstrap isolinux squashfs-tools
+          sudo apt-get install -y live-build debootstrap isolinux squashfs-tools xorriso
 
       - name: Configurazione e Compilazione ISO
         run: |
-          # Se non esiste una configurazione, la inizializza
-          if [ ! -d "config" ]; then
-            lb config --architecture amd64 --distribution bookworm --binary-images iso-hybrid
-          fi
-          # Avvia la costruzione (richiede privilegi di root)
+          sudo lb clean --all
+          lb config \
+            --mode debian \
+            --system live \
+            --architectures amd64 \
+            --distribution bookworm \
+            --archive-areas "main contrib non-free non-free-firmware" \
+            --mirror-bootstrap "http://deb.debian.org/debian/" \
+            --mirror-binary "http://deb.debian.org/debian/" \
+            --binary-images iso-hybrid
+          
           sudo lb build
 
-      - name: Caricamento ISO come artefatto
+      - name: Caricamento ISO
         uses: actions/upload-artifact@v4
         with:
           name: GAB-OS-Galactic-ISO
           path: "*.iso"
-          if-no-files-found: error
