@@ -5,6 +5,9 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -12,15 +15,16 @@ jobs:
       - name: Checkout del codice
         uses: actions/checkout@v4
 
-      - name: Installazione strumenti
+      - name: Preparazione Ambiente
         run: |
           sudo apt-get update
-          sudo apt-get install -y live-build debootstrap isolinux squashfs-tools xorriso
+          sudo apt-get install -y live-build debootstrap isolinux squashfs-tools xorriso debian-archive-keyring
 
-      - name: Configurazione Pulita
+      - name: Configurazione Forzata Debian
         run: |
           sudo lb clean --all
           rm -rf config/
+          # lb config con parametri di compatibilità estrema
           lb config \
             --mode debian \
             --system live \
@@ -29,16 +33,17 @@ jobs:
             --archive-areas "main" \
             --mirror-bootstrap "http://deb.debian.org/debian/" \
             --mirror-binary "http://deb.debian.org/debian/" \
+            --debootstrap-options "--include=debian-archive-keyring" \
             --binary-images iso-hybrid
 
-      - name: Lista Pacchetti Base (No Crash Edition)
+      - name: Lista Pacchetti Essenziali
         run: |
           mkdir -p config/package-lists
-          # Solo l'essenziale per vedere se la ISO viene creata
           echo "kde-plasma-desktop sddm dolphin konsole sudo wget" > config/package-lists/gab.list.chroot
 
       - name: Compilazione ISO
         run: |
+          # Usiamo un trucco per far credere al sistema di essere una vera Debian
           sudo lb build
 
       - name: Caricamento ISO
