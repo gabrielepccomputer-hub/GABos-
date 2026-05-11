@@ -1,5 +1,0 @@
-[Desktop Entry]
-Exec=latte-dock
-Name=Latte Dock
-Type=Application
-X-KDE-Autostart-after=panel

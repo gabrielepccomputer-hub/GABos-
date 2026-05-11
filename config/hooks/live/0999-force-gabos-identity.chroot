@@ -1,10 +1,19 @@
 #!/bin/sh
-# Forza l'identità GAB OS
 mkdir -p /etc/skel/.config/
+
+# Attiviamo gli effetti magici (Blur, Animazioni veloci, Trasparenze)
+cat <<KDECONF > /etc/skel/.config/kwinrc
+[Plugins]
+blurEnabled=true
+magiclampEnabled=true
+wobblywindowsEnabled=false
+
+[Compositing]
+AnimationSpeed=2
+Backend=OpenGL
+Enabled=true
+KDECONF
 
 # Tema Scuro e Cursore
 echo "[Appearance]\nColorScheme=BreezeDark" > /etc/skel/.config/kdeglobals
 echo "[Mouse]\nTheme=breeze_cursors" > /etc/skel/.config/kcminputrc
-
-# Nome del sistema
-echo "GAB-OS-Galactic" > /etc/hostname
