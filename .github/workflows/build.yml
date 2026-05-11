@@ -15,34 +15,37 @@ jobs:
       - name: Checkout del codice
         uses: actions/checkout@v4
 
-      - name: Installazione Dipendenze
+      - name: Reset Certificati e Strumenti
         run: |
           sudo apt-get update
-          sudo apt-get install -y live-build debootstrap isolinux squashfs-tools xorriso debian-archive-keyring wget
+          sudo apt-get install -y --reinstall ca-certificates
+          sudo apt-get install -y live-build debootstrap isolinux squashfs-tools xorriso debian-archive-keyring
 
-      - name: Configurazione Live Build
+      - name: Configurazione con Mirror Alternativo
         run: |
           sudo lb clean --all
           mkdir -p config/package-lists
           
-          # Configurazione con i nuovi nomi delle aree Debian Bookworm
+          # Usiamo il mirror globale deb.debian.org ma forziamo l'uso di HTTP per evitare errori SSL
           lb config \
             --mode debian \
             --system live \
             --architectures amd64 \
             --distribution bookworm \
             --archive-areas "main contrib non-free non-free-firmware" \
-            --mirror-bootstrap "http://deb.debian.org/debian/" \
-            --mirror-binary "http://deb.debian.org/debian/" \
+            --mirror-bootstrap "http://ftp.debian.org/debian/" \
+            --mirror-binary "http://ftp.debian.org/debian/" \
             --binary-images iso-hybrid \
-            --memtest none
+            --memtest none \
+            --apt-recommends false
 
-          # Lista pacchetti MINIMA (Solo l'essenziale per il boot e KDE)
+          # Lista super ridotta: solo l'indispensabile per vedere il verde
           echo "kde-plasma-desktop sddm dolphin konsole sudo network-manager" > config/package-lists/gab.list.chroot
 
       - name: Compilazione ISO
         run: |
-          sudo lb build
+          # Aggiungiamo un flag di debug per vedere esattamente DOVE fallisce
+          sudo lb build --verbose
 
       - name: Caricamento ISO
         uses: actions/upload-artifact@v4
