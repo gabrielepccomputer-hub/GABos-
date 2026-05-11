@@ -12,44 +12,30 @@ jobs:
       - name: Checkout del codice
         uses: actions/checkout@v4
 
-      - name: Installazione strumenti Live Build
+      - name: Installazione strumenti
         run: |
           sudo apt-get update
           sudo apt-get install -y live-build debootstrap isolinux squashfs-tools xorriso
 
-      - name: Pulizia Profonda e Configurazione
+      - name: Configurazione Pulita
         run: |
-          # Forza la rimozione di vecchi file di configurazione
           sudo lb clean --all
           rm -rf config/
-          
-          # Rigenera la configurazione base
           lb config \
             --mode debian \
             --system live \
             --architectures amd64 \
             --distribution bookworm \
-            --archive-areas "main contrib non-free non-free-firmware" \
+            --archive-areas "main" \
             --mirror-bootstrap "http://deb.debian.org/debian/" \
             --mirror-binary "http://deb.debian.org/debian/" \
             --binary-images iso-hybrid
 
-      - name: Creazione Lista Pacchetti Pulita
+      - name: Lista Pacchetti Base (No Crash Edition)
         run: |
           mkdir -p config/package-lists
-          echo "kde-standard sddm plasma-nm plasma-pa dolphin konsole kate ark gwenview spectacle sudo firmware-linux firmware-linux-nonfree firmware-realtek firmware-iwlwifi gparted wget ca-certificates gnupg libu2f-udev libvulkan1 mesa-vulkan-drivers vulkan-tools" > config/package-lists/gab.list.chroot
-
-      - name: Iniezione Hook Chrome
-        run: |
-          mkdir -p config/hooks/live
-          cat <<'CHROME' > config/hooks/live/0100-install-chrome.chroot
-          #!/bin/sh
-          wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -O /tmp/chrome.deb
-          apt-get update
-          apt-get install -y /tmp/chrome.deb
-          rm /tmp/chrome.deb
-          CHROME
-          chmod +x config/hooks/live/0100-install-chrome.chroot
+          # Solo l'essenziale per vedere se la ISO viene creata
+          echo "kde-plasma-desktop sddm dolphin konsole sudo wget" > config/package-lists/gab.list.chroot
 
       - name: Compilazione ISO
         run: |
