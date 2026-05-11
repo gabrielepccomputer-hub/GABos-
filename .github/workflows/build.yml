@@ -15,37 +15,33 @@ jobs:
       - name: Checkout del codice
         uses: actions/checkout@v4
 
-      - name: Reset Certificati e Strumenti
+      - name: Pulizia e Setup
         run: |
           sudo apt-get update
-          sudo apt-get install -y --reinstall ca-certificates
-          sudo apt-get install -y live-build debootstrap isolinux squashfs-tools xorriso debian-archive-keyring
+          sudo apt-get install -y live-build debootstrap xorriso
 
-      - name: Configurazione con Mirror Alternativo
+      - name: Configurazione Forzata
         run: |
           sudo lb clean --all
           mkdir -p config/package-lists
           
-          # Usiamo il mirror globale deb.debian.org ma forziamo l'uso di HTTP per evitare errori SSL
+          # Configurazione iper-semplice per evitare conflitti
           lb config \
             --mode debian \
             --system live \
-            --architectures amd64 \
             --distribution bookworm \
-            --archive-areas "main contrib non-free non-free-firmware" \
-            --mirror-bootstrap "http://ftp.debian.org/debian/" \
-            --mirror-binary "http://ftp.debian.org/debian/" \
+            --archive-areas "main" \
             --binary-images iso-hybrid \
-            --memtest none \
-            --apt-recommends false
+            --memtest none
 
-          # Lista super ridotta: solo l'indispensabile per vedere il verde
-          echo "kde-plasma-desktop sddm dolphin konsole sudo network-manager" > config/package-lists/gab.list.chroot
+          # Solo UN pacchetto (konsole) per testare se il tunnel funziona
+          echo "konsole sudo network-manager sddm plasma-desktop" > config/package-lists/gab.list.chroot
 
-      - name: Compilazione ISO
+      - name: Compilazione ISO (Manovra di Emergenza)
         run: |
-          # Aggiungiamo un flag di debug per vedere esattamente DOVE fallisce
-          sudo lb build --verbose
+          # A volte serve creare manualmente questa cartella per evitare l'errore 100
+          sudo mkdir -p chroot/var/lib/apt/lists/partial
+          sudo lb build
 
       - name: Caricamento ISO
         uses: actions/upload-artifact@v4
