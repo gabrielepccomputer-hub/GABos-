@@ -1,0 +1,34 @@
+name: Build GAB OS Galactic Edition
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del codice
+        uses: actions/checkout@v4
+
+      - name: Installazione strumenti Live Build
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y live-build debootstrap isolinux squashfs-tools
+
+      - name: Configurazione e Compilazione ISO
+        run: |
+          # Se non esiste una configurazione, la inizializza
+          if [ ! -d "config" ]; then
+            lb config --architecture amd64 --distribution bookworm --binary-images iso-hybrid
+          fi
+          # Avvia la costruzione (richiede privilegi di root)
+          sudo lb build
+
+      - name: Caricamento ISO come artefatto
+        uses: actions/upload-artifact@v4
+        with:
+          name: GAB-OS-Galactic-ISO
+          path: "*.iso"
+          if-no-files-found: error
